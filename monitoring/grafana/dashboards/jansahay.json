@@ -1,0 +1,79 @@
+{
+    "dashboard": {
+        "title": "JanSahay AI - Operations Dashboard",
+        "panels": [
+            {
+                "title": "Request Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total[5m])"
+                    }
+                ]
+            },
+            {
+                "title": "Response Time (p95)",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+                    }
+                ]
+            },
+            {
+                "title": "Active Users",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "jansahay_active_users"
+                    }
+                ]
+            },
+            {
+                "title": "Scheme Searches / min",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "rate(jansahay_scheme_searches_total[1m]) * 60"
+                    }
+                ]
+            },
+            {
+                "title": "Voice Queries / min",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "rate(jansahay_voice_queries_total[1m]) * 60"
+                    }
+                ]
+            },
+            {
+                "title": "Eligibility Success Rate",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "jansahay_eligibility_success_rate"
+                    }
+                ]
+            },
+            {
+                "title": "Error Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total{status=~\"5..\"}[5m])"
+                    }
+                ]
+            },
+            {
+                "title": "Redis Hit Rate",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "redis_cache_hit_rate"
+                    }
+                ]
+            }
+        ]
+    }
+}
