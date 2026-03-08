@@ -1,125 +1,116 @@
-# 🇮🇳 JanSahay AI
-
+# JanSahay AI
 **Voice-First Multilingual AI Assistant for Government Scheme Access in India**
-
 > Helping 1.4 billion citizens discover government schemes, check eligibility, and get application guidance — in their own language.
-
-## 🎯 What It Does
-
-| Feature | Description |
-|---------|-------------|
-| 🎤 **Voice First** | Speak in Hindi, Bengali, Tamil, Telugu, or Marathi |
-| 🌐 **6 Languages** | Full UI + NLP in English, Hindi, Bengali, Tamil, Telugu, Marathi |
-| 🤖 **AI Recommendations** | ML-powered scheme matching based on user profile |
-| ✅ **Eligibility Check** | Instant pass/fail with detailed reasons |
-| 📋 **Document Guide** | What documents you need + how to get them |
-| 💬 **WhatsApp Bot** | Full functionality via WhatsApp (Twilio) |
-| 📶 **Low Bandwidth** | Redis caching, GZip, CDN — works in slow networks |
-| 📊 **Analytics Dashboard** | Admin panel with usage metrics and trends |
-
-## 🏗️ Architecture
-
+---
+## Executive Summary
+JanSahay AI bridges the gap between Indian citizens and government welfare programs. By leveraging generative AI, natural language processing, and advanced voice recognition, the platform provides seamless access to complex scheme information without requiring digital literacy or English proficiency.
+### Core Capabilities
+- **Voice-First Interaction:** Natively supports voice input in Hindi, Bengali, Tamil, Telugu, and Marathi.
+- **Multilingual UI & NLP:** Operates across 6 major Indian languages seamlessly.
+- **Intelligent Recommendations:** ML-powered matrix matching user profiles with scheme requirements.
+- **Instant Eligibility Verification:** Real-time pass/fail logic with granular, transparent reasoning.
+- **Analytics & Impact Tracking:** Comprehensive dashboard for tracking user demographics and scheme popularity.
+---
+## System Architecture
+The application is built on a highly scalable, decoupled architecture designed for low-bandwidth environments.
+```mermaid
+graph TD
+    subgraph Client Layer
+        Web[React Frontend]
+        Mobile[Mobile Browser]
+        WA[WhatsApp Bot]
+    end
+    subgraph CDN & Proxy
+        CDN[Cloudflare CDN]
+        Proxy[Nginx Load Balancer]
+    end
+    subgraph Application Layer
+        API[FastAPI Backend]
+        Auth[OAuth 2.0 / JWT]
+        NLP[Language Processing Engine]
+        Voice[Speech-to-Text Module]
+    end
+    subgraph Data & Cache
+        DB[(PostgreSQL)]
+        Cache[(Redis Cache)]
+    end
+    Web --> CDN
+    Mobile --> CDN
+    WA --> Proxy
+    CDN --> Proxy
+    Proxy --> API
+    
+    API --> Auth
+    API --> NLP
+    API --> Voice
+    
+    API --> Cache
+    API --> DB
 ```
-React Frontend ←→ Nginx ←→ FastAPI Backend ←→ PostgreSQL / Redis
-                                    ↕
-                            Google Cloud Speech (Voice)
-                            Twilio (WhatsApp)
-```
-
-## 📂 Project Structure
-
-```
+---
+## Project Structure
+```text
 jansahay-ai/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/          # 8 API route modules
-│   │   ├── auth/            # OAuth 2.0 + RBAC
-│   │   ├── middleware/      # Rate limiting
-│   │   ├── models/          # SQLAlchemy ORM (User, Scheme, Analytics)
-│   │   ├── schemas/         # Pydantic request/response schemas
-│   │   ├── services/        # Core AI services (NLP, Voice, ML, Eligibility)
-│   │   ├── seed/            # 30+ real scheme data
-│   │   ├── config.py        # Environment config
-│   │   ├── database.py      # Async PostgreSQL
-│   │   ├── redis_client.py  # Redis cache utilities
-│   │   └── main.py          # FastAPI app entry point
+│   │   ├── api/v1/          # Core API route handling
+│   │   ├── auth/            # Security & RBAC implementation
+│   │   ├── middleware/      # Request limiting and CORS
+│   │   ├── models/          # SQLAlchemy Database ORM
+│   │   ├── schemas/         # Pydantic validation schemas
+│   │   ├── services/        # AI, NLP, and Eligibility logic
+│   │   └── main.py          # Application entry point
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx          # 5 pages (Home, Schemes, Eligibility, Chat, Dashboard)
-│   │   ├── index.css        # Premium dark theme design system
-│   │   ├── services/api.js  # API client
-│   │   └── i18n/            # 6-language translations
+│   │   ├── components/      # Reusable React components
+│   │   ├── i18n/            # Translation matrices
+│   │   ├── App.jsx          # Application routing
+│   │   └── index.css        # Indian Civic Design System
 │   ├── Dockerfile
-│   └── nginx.conf
-├── monitoring/
-│   ├── prometheus.yml
-│   └── grafana/dashboards/
-├── docs/                    # 8 technical documents
-├── docker-compose.yml       # 7-service stack
-├── nginx.conf               # Reverse proxy + load balancer
-└── .github/workflows/ci.yml # CI/CD pipeline
+│   └── vite.config.js
+└── docker-compose.yml       # Container orchestration
 ```
-
-## 🚀 Quick Start
-
-### Development (Local)
-
+---
+## Technical Setup & Deployment
+### Local Development
+**Backend Initialization:**
 ```bash
-# 1. Backend
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
 uvicorn app.main:app --reload --port 8000
-
-# 2. Frontend
+```
+**Frontend Initialization:**
+```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-### Docker (Full Stack)
-
+### Containerized Deployment
+Ensure Docker and Docker Compose are installed on your target machine:
 ```bash
-docker-compose up --build
-# Backend: http://localhost:8000
-# Frontend: http://localhost:3000
-# API Docs: http://localhost:8000/docs
-# Grafana: http://localhost:3001
+docker-compose up --build -d
 ```
-
-### AWS Deployment
-
-See [docs/deployment.md](docs/deployment.md) for full AWS ECS deployment guide.
-
-## 📖 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Architecture](docs/architecture.md) | System design with Mermaid diagrams |
-| [Database Schema](docs/database-schema.md) | ER diagram + table details |
-| [API Reference](docs/api-reference.md) | All 25+ endpoints |
-| [ML Model Design](docs/ml-model-design.md) | NLP, Recommendation, Eligibility engines |
-| [Deployment](docs/deployment.md) | AWS step-by-step guide |
-| [Cost Estimation](docs/cost-estimation.md) | 3-tier pricing ($135 → $7,992/mo) |
-| [Scalability](docs/scalability.md) | 10K → 10M users plan |
-| [Security](docs/security.md) | OWASP compliance + encryption |
-
-## 🏛️ 30+ Government Schemes
-
-PM-KISAN, Ayushman Bharat, PMAY, Ujjwala, MGNREGA, Jan Dhan, MUDRA, Sukanya Samriddhi, Skill India, Atal Pension, Kisan Credit Card, Free Ration, Ladli Behna, and many more.
-
-## 🛡️ Security
-
-- HTTPS/TLS 1.3 everywhere
-- OAuth 2.0 + JWT authentication
-- bcrypt password hashing (12 rounds)
-- RBAC (citizen, admin, gov_official)
-- Rate limiting (60 req/min)
-- Input validation (Pydantic)
-- OWASP Top 10 compliant
-
-## 📜 License
-
-Built with ❤️ for Bharat
+- **Backend API:** `http://localhost:8000`
+- **Frontend App:** `http://localhost:3000`
+- **Swagger Documentation:** `http://localhost:8000/docs`
+---
+## Technical Documentation
+Detailed documentation is available in the `docs/` directory:
+1. **[System Architecture](docs/architecture.md):** Deep dive into the component interaction.
+2. **[Database Schema](docs/database-schema.md):** Entity-relationship maps and indexing strategies.
+3. **[API Reference](docs/api-reference.md):** Complete endpoint specifications.
+4. **[ML Model Design](docs/ml-model-design.md):** Translation and intent-matching workflows.
+5. **[Production Deployment](docs/deployment.md):** AWS ECS and Vercel infrastructure guides.
+---
+## Security & Compliance
+The platform is designed with enterprise-grade security tailored for government data interaction:
+- **Transport:** Strict HTTPS/TLS 1.3 enforcement.
+- **Authentication:** OAuth 2.0 flows with short-lived JWTs.
+- **Data Protection:** bcrypt hashing (cost factor 12) for credentials.
+- **Access Control:** Role-Based Access Control (Citizen, Admin, Official).
+- **Protection:** OWASP Top 10 mitigation and strict rate limiting.
+---
+*Built for Bharat — Serving 29 States & Union Territories*
